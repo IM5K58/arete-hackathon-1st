@@ -1,15 +1,23 @@
 require("dotenv").config();
 const express = require("express");
-const http = require("http");
+const https = require("https");
+const http = require("http"); // 추가
+const fs = require("fs"); 
 const { Server } = require("socket.io");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
 const app = express();
-const server = http.createServer(app);
+
+const options = {
+  key: fs.readFileSync("/etc/letsencrypt/live/tilepiece.com/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/tilepiece.com/fullchain.pem"),
+};
+
+const server = https.createServer(options, app);  // https 서버 생성
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000","https://arete-hackathon-1st.vercel.app/"],
     methods: ["GET", "POST"]
   }
 });
@@ -50,6 +58,11 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(4000, () => {
-  console.log("🚀 서버 실행 중: http://localhost:3000");
+server.listen(443, () => {
+  console.log("🚀 서버 실행 중: 예이");
 });
+
+http.createServer((req, res) => {
+  res.writeHead(301, { Location: "https://" + req.headers.host + req.url });
+  res.end();
+}).listen(80);
