@@ -17,12 +17,19 @@ const options = {
 const server = https.createServer(options, app);  // https 서버 생성
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000","https://arete-hackathon-1st.vercel.app/"],
-    methods: ["GET", "POST"]
+    origin: ["https://arete-hackathon-1st-y1.vercel.app"],
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
-app.use(cors());
+const corsOptions = {
+  origin: ["https://arete-hackathon-1st-y1.vercel.app"],
+  methods: ["GET", "POST"],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // MongoDB 연결
